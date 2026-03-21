@@ -1,0 +1,15 @@
+# Web Framework
+Flask
+
+# Open Source Computer Vision Library
+opencv-python
+
+# Extract facial features and convert face to numerical vectors
+scikit-learn
+
+# Python library for numerical operations
+numpy
+
+# For creating public shareable links (optional)
+# pip install pyngrok
+# Then run: ngrok http 5000
