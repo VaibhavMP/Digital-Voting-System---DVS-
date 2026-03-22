@@ -10,17 +10,19 @@ import os
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # Secure secret key for sessions
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))  # Secure secret key for sessions
 
-# Auto-create public link (for sharing)
-try:
-    from pyngrok import ngrok
-    public_url = ngrok.connect(5000)
-    print(f"\n🌐 PUBLIC LINK: {public_url}")
-    print(f"📱 Share this link to access the app remotely!\n")
-except:
-    print("\n💡 Tip: Install pyngrok to create a public link:")
-    print("   pip install pyngrok\n")
+# Auto-create public link (for sharing) - only in local development
+import sys
+if not any('gunicorn' in arg for arg in sys.argv):
+    try:
+        from pyngrok import ngrok
+        public_url = ngrok.connect(5000)
+        print(f"\n🌐 PUBLIC LINK: {public_url}")
+        print(f"📱 Share this link to access the app remotely!\n")
+    except:
+        print("\n💡 Tip: Install pyngrok to create a public link:")
+        print("   pip install pyngrok\n")
 
 # Database configuration
 DB_PATH = "voting.db"
@@ -465,5 +467,7 @@ if __name__ == '__main__':
     print("Visit: http://127.0.0.1:5000")
     print("="*50 + "\n")
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Use debug=False for production
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    app.run(debug=debug_mode, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
 
